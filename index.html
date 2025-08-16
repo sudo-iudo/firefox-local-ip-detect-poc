@@ -29,7 +29,7 @@
       alert(local_ip);
       document.getElementById('output').innerHTML = JSON.stringify(candidates);
     } catch (e) {
-      alert(e.message);
+      alert(e?.message);
     }
   }
 
