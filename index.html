@@ -1,32 +1,36 @@
 <div id="output"></div>
 <script>
   async function testSTUN() {
-    const stunUrl = 'stun:127.0.0.1:3478';
+    try {
+      const stunUrl = 'stun:127.0.0.1:3478';
 
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: stunUrl }],
-    });
+      const pc = new RTCPeerConnection({
+        iceServers: [{ urls: stunUrl }],
+      });
 
-    pc.createDataChannel('test');
+      pc.createDataChannel('test');
 
-    const candidates = [];
+      const candidates = [];
 
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
 
-    const local_ip = await new Promise((resolve, reject) => {
-      pc.onicecandidate = (e) => {
-        if (e.candidate) {
-          candidates.push(e.candidate);
-        } else {
-          resolve(candidates.find((x) => x.type === 'srflx').address);
-          console.log('ICE gathering finished');
-        }
-      };
-    });
+      const local_ip = await new Promise((resolve, reject) => {
+        pc.onicecandidate = (e) => {
+          if (e.candidate) {
+            candidates.push(e.candidate);
+          } else {
+            resolve(candidates.find((x) => x.type === 'srflx').address);
+            console.log('ICE gathering finished');
+          }
+        };
+      });
 
-    alert(local_ip);
-    document.getElementById('output').innerHTML = JSON.stringify(candidates);
+      alert(local_ip);
+      document.getElementById('output').innerHTML = JSON.stringify(candidates);
+    } catch (e) {
+      alert(e.message);
+    }
   }
 
   testSTUN();
