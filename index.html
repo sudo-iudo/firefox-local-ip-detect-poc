@@ -1,0 +1,25 @@
+<div id="output"></div>
+<script>
+  async function testSTUN() {
+    const stunUrl = 'stun:127.0.0.1:3478';
+
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: stunUrl }],
+    });
+
+    pc.createDataChannel('test');
+
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        console.log('ICE candidate:', e.candidate.candidate);
+      } else {
+        console.log('ICE gathering finished');
+      }
+    };
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+  }
+
+  testSTUN();
+</script>
