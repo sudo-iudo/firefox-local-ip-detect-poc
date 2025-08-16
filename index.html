@@ -9,16 +9,24 @@
 
     pc.createDataChannel('test');
 
-    pc.onicecandidate = (e) => {
-      if (e.candidate) {
-        console.log('ICE candidate:', e.candidate.candidate);
-      } else {
-        console.log('ICE gathering finished');
-      }
-    };
+    const candidates = [];
 
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
+
+    const local_ip = await new Promise((resolve, reject) => {
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          candidates.push(e.candidate);
+        } else {
+          resolve(candidates.find((x) => x.type === 'srflx').address);
+          console.log('ICE gathering finished');
+        }
+      };
+    });
+
+    alert(local_ip);
+    document.getElementById('output').innerHTML = local_ip;
   }
 
   testSTUN();
